@@ -38,6 +38,7 @@ class CompactCalendarController {
     private int widthPerDay;
     private String[] dayColumnNames;
     private float distanceX;
+    private float distanceY;
     private PointF accumulatedScrollOffset = new PointF();
     private OverScroller scroller;
     private int monthsScrolledSoFar;
@@ -210,10 +211,10 @@ class CompactCalendarController {
 
     boolean onTouch(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (currentDirection == Direction.HORIZONTAL) {
-                monthsScrolledSoFar = Math.round(accumulatedScrollOffset.x / width);
-                float remainingScrollAfterFingerLifted = (accumulatedScrollOffset.x - monthsScrolledSoFar * width);
-                scroller.startScroll((int) accumulatedScrollOffset.x, 0, (int) -remainingScrollAfterFingerLifted, 0);
+            if (currentDirection == Direction.VERTICAL) {
+                monthsScrolledSoFar = Math.round(accumulatedScrollOffset.y / height);
+                float remainingScrollAfterFingerLifted = (accumulatedScrollOffset.y - monthsScrolledSoFar * height);
+                scroller.startScroll( 0,(int) accumulatedScrollOffset.y, 0,(int) -remainingScrollAfterFingerLifted);
                 currentDirection = Direction.NONE;
                 setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, 0);
 
@@ -252,7 +253,7 @@ class CompactCalendarController {
         currentCalender.setTime(currentDate);
         setToMidnight(currentCalender);
         monthsScrolledSoFar = 0;
-        accumulatedScrollOffset.x = 0;
+        accumulatedScrollOffset.y = 0;
     }
 
     private void setToMidnight(Calendar calendar) {
@@ -315,7 +316,7 @@ class CompactCalendarController {
     }
 
     Date onSingleTapConfirmed(MotionEvent e) {
-        monthsScrolledSoFar = Math.round(accumulatedScrollOffset.x / width);
+        monthsScrolledSoFar = Math.round(accumulatedScrollOffset.y / height);
         int dayColumn = Math.round((paddingLeft + e.getX() - paddingWidth - paddingRight) / widthPerDay);
         int dayRow = Math.round((e.getY() - paddingHeight) / heightPerDay);
 
@@ -357,20 +358,20 @@ class CompactCalendarController {
             }
         }
 
-        this.distanceX = distanceX;
+        this.distanceY = distanceY;
         return true;
     }
 
     boolean computeScroll() {
         if (scroller.computeScrollOffset()) {
-            accumulatedScrollOffset.x = scroller.getCurrX();
+            accumulatedScrollOffset.y = scroller.getCurrY();
             return true;
         }
         return false;
     }
 
     private void drawScrollableCalender(Canvas canvas) {
-        monthsScrolledSoFar = (int) (accumulatedScrollOffset.x / width);
+        monthsScrolledSoFar = (int) (accumulatedScrollOffset.y / height);
 
 
         drawPreviousMonth(canvas);
@@ -396,8 +397,8 @@ class CompactCalendarController {
     }
 
     private void calculateXPositionOffset() {
-        if (currentDirection == Direction.HORIZONTAL) {
-            accumulatedScrollOffset.x -= distanceX;
+        if (currentDirection == Direction.VERTICAL) {
+            accumulatedScrollOffset.y -= distanceY;
         }
     }
 
@@ -409,6 +410,8 @@ class CompactCalendarController {
         dayPaint.setColor(calenderTextColor);
     }
 
+
+    //function that draws event indicators <-- add period functionality to this func
     void drawEvents(Canvas canvas, Calendar currentMonthToDrawCalender, int offset) {
         List<CalendarDayEvent> uniqCalendarDayEvents =
                 events.get(getKeyForCalendarEvent(currentMonthToDrawCalender));
@@ -467,17 +470,19 @@ class CompactCalendarController {
             if (dayColumn == dayColumnNames.length) {
                 break;
             }
-            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
+            float yPosition = heightPerDay * dayRow + paddingHeight + accumulatedScrollOffset.y + offset;
+
+//            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
             if (dayRow == 0) {
                 // first row, so draw the first letter of the day
                 if (shouldDrawDaysHeader) {
                     dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
-                    canvas.drawText(dayColumnNames[dayColumn], xPosition, paddingHeight, dayPaint);
+                    canvas.drawText(dayColumnNames[dayColumn], paddingLeft+paddingWidth-paddingRight, yPosition, dayPaint);
                     dayPaint.setTypeface(Typeface.DEFAULT);
                 }
             } else {
                 int day = ((dayRow - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
-                float yPosition = dayRow * heightPerDay + paddingHeight;
+                float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
                 if (isSameMonth && todayDayOfMonth == day) {
                     // TODO calculate position of circle in a more reliable way
                     drawCircle(canvas, xPosition, yPosition, currentDayBackgroundColor);
