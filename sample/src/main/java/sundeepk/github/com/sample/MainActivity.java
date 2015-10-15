@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
         final ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mutableBookings);
         bookingsListView.setAdapter(adapter);
         final CompactCalendarView compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
-        compactCalendarView.drawSmallIndicatorForEvents(true);
+        compactCalendarView.drawSmallIndicatorForEvents(false);
         addEvents(compactCalendarView);
         compactCalendarView.invalidate();
 
@@ -114,7 +114,8 @@ public class MainActivity extends ActionBarActivity {
             currentCalender.setTime(firstDayOfMonth);
             currentCalender.add(Calendar.DATE, i);
             setToMidnight(currentCalender);
-            compactCalendarView.addEvent(new CalendarDayEvent(currentCalender.getTimeInMillis(),  Color.argb(255, 169, 68, 65)), false);
+            compactCalendarView.addEvent(new CalendarDayEvent(currentCalender.getTimeInMillis(),  Color.parseColor("#1976D2")), false);
+//            compactCalendarView.addEvent(new CalendarDayEvent(currentCalender.getTimeInMillis(),  Color.parseColor("#000000")), false);
             bookings.put(currentCalender.getTime(), createBookings());
         }
     }

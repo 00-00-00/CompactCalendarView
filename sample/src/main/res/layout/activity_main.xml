@@ -25,10 +25,10 @@
         android:layout_width="fill_parent"
         android:layout_height="250dp"
         app:compactCalendarTextSize="12sp"
-        app:compactCalendarBackgroundColor="#ffe95451"
+        app:compactCalendarBackgroundColor="#2196F3"
         app:compactCalendarTextColor="#fff"
-        app:compactCalendarCurrentSelectedDayBackgroundColor="#E57373"
-        app:compactCalendarCurrentDayBackgroundColor="#B71C1C"
+        app:compactCalendarCurrentSelectedDayBackgroundColor="#2196F3"
+        app:compactCalendarCurrentDayBackgroundColor="#4FC3F8"
         />
 
     <ListView
