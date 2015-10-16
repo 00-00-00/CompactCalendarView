@@ -383,17 +383,17 @@ class CompactCalendarController {
 
     private void drawNextMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, 1);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, (width * (-monthsScrolledSoFar + 1)));
+        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar + 1)));
     }
 
     private void drawCurrentMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, 0);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, width * -monthsScrolledSoFar);
+        drawMonth(canvas, calendarWithFirstDayOfMonth, height * -monthsScrolledSoFar);
     }
 
     private void drawPreviousMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, -1);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, (width * (-monthsScrolledSoFar - 1)));
+        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar - 1)));
     }
 
     private void calculateXPositionOffset() {
