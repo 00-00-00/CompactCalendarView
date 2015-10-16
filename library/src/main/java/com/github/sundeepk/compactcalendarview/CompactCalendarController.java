@@ -30,6 +30,8 @@ class CompactCalendarController {
 
     private int paddingWidth = 40;
     private int paddingHeight = 40;
+
+    private int paddingTop;
     private Paint dayPaint = new Paint();
     private Rect rect;
     private int textHeight;
@@ -107,6 +109,9 @@ class CompactCalendarController {
         dayPaint.getTextBounds("31", 0, "31".length(), rect);
         textHeight = rect.height() * 3;
         textWidth = rect.width() * 2;
+        //set the padding for the title
+        paddingTop = textHeight + 10;
+
 
         todayCalender.setTime(currentDate);
         setToMidnight(todayCalender);
@@ -383,17 +388,17 @@ class CompactCalendarController {
 
     private void drawNextMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, 1);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar + 1)));
+        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar + 1)) );
     }
 
     private void drawCurrentMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, 0);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, height * -monthsScrolledSoFar);
+        drawMonth(canvas, calendarWithFirstDayOfMonth, height * -monthsScrolledSoFar );
     }
 
     private void drawPreviousMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, -1);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar - 1)));
+        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar - 1)) );
     }
 
     private void calculateXPositionOffset() {
@@ -431,7 +436,7 @@ class CompactCalendarController {
 
                 int weekNumberForMonth = eventsCalendar.get(Calendar.WEEK_OF_MONTH);
                 float xPosition = widthPerDay * dayOfWeek + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
-                float yPosition = weekNumberForMonth * heightPerDay + paddingHeight + accumulatedScrollOffset.y;
+                float yPosition = weekNumberForMonth * heightPerDay + paddingHeight + accumulatedScrollOffset.y + paddingTop;
 
                 int dayOfMonth = eventsCalendar.get(Calendar.DAY_OF_MONTH);
                 boolean isSameDayAsCurrentDay = (todayDayOfMonth == dayOfMonth && shouldDrawCurrentDayCircle);
@@ -460,6 +465,11 @@ class CompactCalendarController {
         boolean isSameMonth = currentMonthToDrawCalender.get(Calendar.MONTH) == todayCalender.get(Calendar.MONTH);
         int todayDayOfMonth = todayCalender.get(Calendar.DAY_OF_MONTH);
 
+        String currentTitle = currentCalender.getDisplayName(Calendar.MONTH, Calendar.LONG, locale) + " " + currentCalender.get(Calendar.YEAR);
+        dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        canvas.drawText(currentTitle, width / 2, paddingHeight + accumulatedScrollOffset.y + offset, dayPaint);
+        dayPaint.setTypeface(Typeface.DEFAULT);
+
         for (int dayColumn = 0, dayRow = 0; dayColumn <= 6; dayRow++) {
             if (dayRow == 7) {
                 dayRow = 0;
@@ -470,8 +480,9 @@ class CompactCalendarController {
             if (dayColumn == dayColumnNames.length) {
                 break;
             }
-            float yPosition = heightPerDay * dayRow + paddingHeight + accumulatedScrollOffset.y + offset;
+            float yPosition = heightPerDay * dayRow + paddingHeight + accumulatedScrollOffset.y + offset +paddingTop;
             float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
+
 
 //            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
             if (dayRow == 0) {
