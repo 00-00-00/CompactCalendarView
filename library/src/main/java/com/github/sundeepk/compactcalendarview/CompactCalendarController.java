@@ -431,7 +431,7 @@ class CompactCalendarController {
 
                 int weekNumberForMonth = eventsCalendar.get(Calendar.WEEK_OF_MONTH);
                 float xPosition = widthPerDay * dayOfWeek + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
-                float yPosition = weekNumberForMonth * heightPerDay + paddingHeight;
+                float yPosition = weekNumberForMonth * heightPerDay + paddingHeight + accumulatedScrollOffset.y;
 
                 int dayOfMonth = eventsCalendar.get(Calendar.DAY_OF_MONTH);
                 boolean isSameDayAsCurrentDay = (todayDayOfMonth == dayOfMonth && shouldDrawCurrentDayCircle);
@@ -471,18 +471,19 @@ class CompactCalendarController {
                 break;
             }
             float yPosition = heightPerDay * dayRow + paddingHeight + accumulatedScrollOffset.y + offset;
+            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
 
 //            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
             if (dayRow == 0) {
                 // first row, so draw the first letter of the day
                 if (shouldDrawDaysHeader) {
                     dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
-                    canvas.drawText(dayColumnNames[dayColumn], paddingLeft+paddingWidth-paddingRight, yPosition, dayPaint);
+                    canvas.drawText(dayColumnNames[dayColumn], xPosition, yPosition, dayPaint);
                     dayPaint.setTypeface(Typeface.DEFAULT);
                 }
             } else {
                 int day = ((dayRow - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
-                float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
+//                float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
                 if (isSameMonth && todayDayOfMonth == day) {
                     // TODO calculate position of circle in a more reliable way
                     drawCircle(canvas, xPosition, yPosition, currentDayBackgroundColor);
