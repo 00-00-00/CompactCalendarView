@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.widget.OverScroller;
@@ -197,7 +198,7 @@ class CompactCalendarController {
 
     void onMeasure(int width, int height, int paddingRight, int paddingLeft) {
         widthPerDay = (width) / DAYS_IN_WEEK;
-        heightPerDay = height / 7;
+        heightPerDay = height / 8;
         this.width = width;
         this.height = height;
         this.paddingRight = paddingRight;
@@ -436,7 +437,7 @@ class CompactCalendarController {
 
                 int weekNumberForMonth = eventsCalendar.get(Calendar.WEEK_OF_MONTH);
                 float xPosition = widthPerDay * dayOfWeek + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
-                float yPosition = weekNumberForMonth * heightPerDay + paddingHeight + accumulatedScrollOffset.y;// + paddingTop;
+                float yPosition = (weekNumberForMonth + 1) * heightPerDay + paddingHeight + accumulatedScrollOffset.y;// + paddingTop;
 
                 int dayOfMonth = eventsCalendar.get(Calendar.DAY_OF_MONTH);
                 boolean isSameDayAsCurrentDay = (todayDayOfMonth == dayOfMonth && shouldDrawCurrentDayCircle);
@@ -467,7 +468,7 @@ class CompactCalendarController {
 
 
         for (int dayColumn = 0, dayRow = 0; dayColumn <= 6; dayRow++) {
-            if (dayRow == 8) {
+            if (dayRow == 9) {
                 dayRow = 0;
                 if (dayColumn <= 6) {
                     dayColumn++;
@@ -478,17 +479,18 @@ class CompactCalendarController {
             }
             float yPosition = heightPerDay * dayRow + paddingHeight + accumulatedScrollOffset.y + offset ;//+paddingTop;
             float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
-
+            Log.i("Calendar controller ","@drawMonth : Row :"+dayRow+" Column :"+dayColumn);
+            Log.i("Calendar controller ","@drawMonth : xPosition :"+xPosition+" yPosition :"+yPosition);
 
 //            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
             if(dayRow == 0)
             {
-                String currentTitle = currentCalender.getDisplayName(Calendar.MONTH, Calendar.LONG, locale) + " " + currentCalender.get(Calendar.YEAR);
+                String currentTitle = currentMonthToDrawCalender.getDisplayName(Calendar.MONTH, Calendar.LONG, locale) + " " + currentCalender.get(Calendar.YEAR);
                 dayPaint.setTypeface(Typeface.DEFAULT_BOLD);
                 canvas.drawText(currentTitle, width / 2, paddingHeight + accumulatedScrollOffset.y + offset, dayPaint);
                 dayPaint.setTypeface(Typeface.DEFAULT);
             }
-            if (dayRow == 1) {
+            else if (dayRow == 1) {
 
 
 
@@ -498,8 +500,9 @@ class CompactCalendarController {
                     canvas.drawText(dayColumnNames[dayColumn], xPosition, yPosition, dayPaint);
                     dayPaint.setTypeface(Typeface.DEFAULT);
                 }
-            } else {
-                int day = ((dayRow - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
+            }
+            else {
+                int day = ((dayRow -1 - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
 //                float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
                 if (isSameMonth && todayDayOfMonth == day) {
                     // TODO calculate position of circle in a more reliable way
@@ -509,6 +512,7 @@ class CompactCalendarController {
                 }
                 if (day <= currentMonthToDrawCalender.getActualMaximum(Calendar.DAY_OF_MONTH) && day > 0) {
                     canvas.drawText(String.valueOf(day), xPosition, yPosition, dayPaint);
+
                 }
             }
 
