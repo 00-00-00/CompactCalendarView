@@ -332,7 +332,7 @@ class CompactCalendarController {
         int firstDayOfMonth = calendarWithFirstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1;
         firstDayOfMonth = firstDayOfMonth <= 0 ? 7 : firstDayOfMonth;
 
-        int dayOfMonth = ((dayRow - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
+        int dayOfMonth = ((dayRow +1 - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
 
         if (dayOfMonth < calendarWithFirstDayOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
                 && dayOfMonth >= 0) {
@@ -468,7 +468,7 @@ class CompactCalendarController {
 
 
         for (int dayColumn = 0, dayRow = 0; dayColumn <= 6; dayRow++) {
-            if (dayRow == 9) {
+            if (dayRow == 8) {
                 dayRow = 0;
                 if (dayColumn <= 6) {
                     dayColumn++;
@@ -479,8 +479,7 @@ class CompactCalendarController {
             }
             float yPosition = heightPerDay * dayRow + paddingHeight + accumulatedScrollOffset.y + offset ;//+paddingTop;
             float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft - paddingRight;
-            Log.i("Calendar controller ","@drawMonth : Row :"+dayRow+" Column :"+dayColumn);
-            Log.i("Calendar controller ","@drawMonth : xPosition :"+xPosition+" yPosition :"+yPosition);
+
 
 //            float xPosition = widthPerDay * dayColumn + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight;
             if(dayRow == 0)
