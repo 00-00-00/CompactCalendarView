@@ -332,7 +332,7 @@ class CompactCalendarController {
         int firstDayOfMonth = calendarWithFirstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1;
         firstDayOfMonth = firstDayOfMonth <= 0 ? 7 : firstDayOfMonth;
 
-        int dayOfMonth = ((dayRow +1 - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
+        int dayOfMonth = ((dayRow -1 - 1) * 7 + dayColumn + 1) - firstDayOfMonth;
 
         if (dayOfMonth < calendarWithFirstDayOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
                 && dayOfMonth >= 0) {
