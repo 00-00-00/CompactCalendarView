@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
+import com.github.sundeepk.compactcalendarview.domain.CalendarPeriod;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class MainActivity extends ActionBarActivity {
         final CompactCalendarView compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
         compactCalendarView.drawSmallIndicatorForEvents(false);
         addEvents(compactCalendarView);
+        addPeriod(compactCalendarView);
         compactCalendarView.invalidate();
 
         //set initial title
@@ -104,6 +106,19 @@ public class MainActivity extends ActionBarActivity {
         });
 
 
+    }
+
+
+    private void addPeriod(CompactCalendarView compactCalendarView) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        long startTime = calendar.getTimeInMillis();
+        calendar.add(Calendar.DATE, 8);
+        Log.d("Main Activity", "Start time :" + startTime + "End time :" + calendar.getTimeInMillis());
+        CalendarPeriod calendarPeriod =
+                new CalendarPeriod(startTime, calendar.getTimeInMillis(),Color.parseColor("#1976D2"));
+        compactCalendarView.addPeriod(calendarPeriod);
     }
 
     private void addEvents(CompactCalendarView compactCalendarView) {

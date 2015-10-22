@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.OverScroller;
 
 import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
+import com.github.sundeepk.compactcalendarview.domain.CalendarPeriod;
 
 import java.util.Date;
 import java.util.List;
@@ -258,6 +259,13 @@ public class CompactCalendarView extends View {
             return true;
         }
         return gestureDetector.onTouchEvent(event);
+    }
+
+
+    public void addPeriod(CalendarPeriod calendarPeriod)
+    {
+        compactCalendarController.addPeriod(calendarPeriod);
+        invalidate();
     }
 
 }

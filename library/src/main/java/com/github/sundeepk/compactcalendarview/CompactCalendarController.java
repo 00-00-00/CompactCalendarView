@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.ArrayMap;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.widget.OverScroller;
 
 import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
+import com.github.sundeepk.compactcalendarview.domain.CalendarPeriod;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -66,6 +68,11 @@ class CompactCalendarController {
     private Map<String, List<CalendarDayEvent>> events = new HashMap<>();
     private boolean showSmallIndicator;
     private float smallIndicatorRadius;
+    private CalendarPeriod calendarPeriod;  //receive data
+
+    public void addPeriod(CalendarPeriod calendarPeriod) {
+        this.calendarPeriod = calendarPeriod;
+    }
 
     private enum Direction {
         NONE, HORIZONTAL, VERTICAL
@@ -269,6 +276,7 @@ class CompactCalendarController {
         calendar.set(Calendar.MILLISECOND, 0);
     }
 
+
     void addEvent(CalendarDayEvent event) {
         eventsCalendar.setTimeInMillis(event.getTimeInMillis());
         String key = getKeyForCalendarEvent(eventsCalendar);
@@ -389,7 +397,7 @@ class CompactCalendarController {
 
     private void drawNextMonth(Canvas canvas) {
         setCalenderToFirstDayOfMonth(calendarWithFirstDayOfMonth, currentDate, -monthsScrolledSoFar, 1);
-        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar + 1)) );
+        drawMonth(canvas, calendarWithFirstDayOfMonth, (height * (-monthsScrolledSoFar + 1)));
     }
 
     private void drawCurrentMonth(Canvas canvas) {
@@ -416,6 +424,18 @@ class CompactCalendarController {
         dayPaint.setColor(calenderTextColor);
     }
 
+    void showPeriod(Canvas canvas, Calendar currentMonthToDrawCalendar, int offset)
+    {
+        int currentMonth = currentMonthToDrawCalendar.get(Calendar.MONTH);
+        long startPeriod = calendarPeriod.getStartPeriodforMonth(currentMonth);
+        long stopPeriod = calendarPeriod.getStopPeriodforMonth(currentMonth);
+        if(calendarPeriod!=null && startPeriod >0 && stopPeriod>0)
+            drawPeriod(canvas,
+                    new Date(startPeriod),
+                    new Date(stopPeriod) ,
+                    offset);
+
+    }
 
     //function that draws event indicators <-- add period functionality to this func
     void drawEvents(Canvas canvas, Calendar currentMonthToDrawCalender, int offset) {
@@ -454,8 +474,73 @@ class CompactCalendarController {
         }
     }
 
+
+    void drawPeriod(Canvas canvas, Date start, Date end, int offset )
+    {
+
+        Paint periodPaint = new Paint();
+        periodPaint.setColor(calendarPeriod.getColor());
+        periodPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+
+        Calendar periodCalendar = Calendar.getInstance(locale);
+        periodCalendar.setTime(start);
+
+        int weekForMonth = periodCalendar.get(Calendar.WEEK_OF_MONTH);
+        int dayOfWeek = periodCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+        dayOfWeek = dayOfWeek <= 0 ? 7 : dayOfWeek;
+        dayOfWeek = dayOfWeek - 1;
+
+        float left = (widthPerDay * dayOfWeek + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight);
+        float bottom = (weekForMonth + 1) * heightPerDay + paddingHeight + accumulatedScrollOffset.y + heightPerDay/2 - textHeight/2;// + paddingTop;
+        float top = (weekForMonth + 1) * heightPerDay + paddingHeight + accumulatedScrollOffset.y - heightPerDay/2;
+        float right;
+
+
+        periodCalendar.setTime(end);
+
+        int finalWeekForMonth = periodCalendar.get(Calendar.WEEK_OF_MONTH);
+        int finalDayOfWeek = periodCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+        finalDayOfWeek = finalDayOfWeek <= 0 ? 7 : finalDayOfWeek;
+        finalDayOfWeek = finalDayOfWeek - 1;
+
+        if(finalWeekForMonth > weekForMonth)
+        {
+            finalDayOfWeek = 7 - 1;
+            right = (widthPerDay * finalDayOfWeek + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight);
+            canvas.drawRect(left, top, right, bottom, periodPaint);
+            canvas.drawCircle(left, bottom - (heightPerDay - textHeight/2)/2 , (heightPerDay - textHeight/2)/2, periodPaint);
+            canvas.drawCircle(right, bottom - (heightPerDay - textHeight/2)/2, (heightPerDay - textHeight / 2) / 2, periodPaint);
+            Log.i("Draw Period :", "Left>>Top>>Right>>Bottom :" + left + ">>" + top + ">>" + right + ">>" + bottom);
+
+
+            periodCalendar.setTime(start);
+            Log.i("Draw date", "From :" + periodCalendar.getTime() + "To :" + end);
+
+            periodCalendar.set(Calendar.DAY_OF_WEEK, 2);
+            periodCalendar.set(Calendar.WEEK_OF_MONTH, weekForMonth + 1);
+
+
+            Log.i("Draw date i", "From :" + periodCalendar.getTime() + "To :" + end);
+            drawPeriod(canvas, periodCalendar.getTime(), end, offset);
+        }
+        else if(finalWeekForMonth == weekForMonth)
+        {
+            periodCalendar.setTime(start);
+            Log.i("Draw date ii", "From :" + periodCalendar.getTime() + "To :" + end);
+            right = (widthPerDay * finalDayOfWeek + paddingWidth + paddingLeft + accumulatedScrollOffset.x + offset - paddingRight);
+            canvas.drawRect(left, top, right, bottom,periodPaint);
+            canvas.drawCircle(left, bottom - (heightPerDay - textHeight/2)/2, (heightPerDay - textHeight/2)/2, periodPaint);
+            canvas.drawCircle(right,bottom - (heightPerDay - textHeight/2)/2, (heightPerDay - textHeight/2)/2, periodPaint);
+            Log.i("Draw Period i :", "Left>>Top>>Right>>Bottom :" + left + ">>" + top + ">>" + right + ">>" + bottom);
+        }
+
+
+
+    }
+
     void drawMonth(Canvas canvas, Calendar currentMonthToDrawCalender, int offset) {
         drawEvents(canvas, currentMonthToDrawCalender, offset);
+        showPeriod(canvas, currentMonthToDrawCalender, offset);
 
         //offset by one because we want to start from Monday
         int firstDayOfMonth = currentMonthToDrawCalender.get(Calendar.DAY_OF_WEEK) - 1;
